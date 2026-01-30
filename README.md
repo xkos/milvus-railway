@@ -54,9 +54,17 @@ connections.connect(
 
 ## 端口说明
 
-- **19530**: Milvus gRPC 服务端口（主要连接端口）
-- **9091**: Milvus Metrics 端口（健康检查和监控）
+- **19530**: Milvus gRPC 服务端口
+  - 主要连接端口，客户端通过此端口连接
+  - **Railway 对外暴露的端口**（通过 `PORT=19530` 设置）
+  - 公网访问：`your-app.railway.app:19530`
+- **9091**: Milvus Metrics 端口
+  - 健康检查端点：`/healthz`
+  - 监控指标端点：`/metrics`
+  - **仅容器内部使用**，不对外暴露
 - **2379**: etcd 客户端端口
+  - 内嵌 etcd 的客户端接口
+  - **仅容器内部使用**，不对外暴露
 
 ## 配置说明
 
@@ -92,11 +100,18 @@ dataCoord:
 
 ### 环境变量
 
-Railway 会自动设置以下环境变量（已在 Dockerfile 中配置）：
+Railway 会自动设置以下环境变量（已在配置中设定）：
+
+**Dockerfile 中配置的环境变量：**
 - `ETCD_USE_EMBED=true`: 使用内嵌 etcd
 - `ETCD_DATA_DIR=/var/lib/milvus/etcd`: etcd 数据目录
 - `COMMON_STORAGETYPE=local`: 使用本地存储
 - `DEPLOY_MODE=STANDALONE`: Standalone 部署模式
+
+**railway.toml 中配置的环境变量：**
+- `PORT=19530`: Railway 对外暴露的端口（Milvus gRPC 主端口）
+  - 客户端应通过此端口连接 Milvus
+  - Railway 会将此端口映射到公网地址
 
 ### 服务变量（Service Variables）
 
@@ -188,11 +203,26 @@ name = "milvus-data"
 
 ### 健康检查
 
-容器包含健康检查机制：
-- 检查间隔：30秒
-- 启动等待时间：90秒
-- 超时时间：20秒
-- 重试次数：3次
+**Railway 健康检查策略：**
+- Railway 禁用了内置的 HTTP 健康检查（因为 Milvus 在不同端口提供健康检查）
+- 使用 **Docker 容器的 HEALTHCHECK** 指令进行健康监控
+- Railway 会监控容器状态，如果不健康会根据重启策略重启
+
+**Docker 容器健康检查配置：**
+- **检查命令**: `curl -f http://localhost:9091/healthz`
+- **检查间隔**: 30秒
+- **启动等待时间**: 90秒（Milvus 启动需要时间）
+- **超时时间**: 20秒
+- **重试次数**: 3次
+
+**Railway 重启策略：**
+- **策略**: `ON_FAILURE`（失败时重启）
+- **最大重试**: 10次
+
+**端口说明：**
+- **19530**: 对外暴露的 gRPC 端口（通过 `PORT` 环境变量设置）
+- **9091**: 内部健康检查端口（不对外暴露）
+- **2379**: etcd 端口（不对外暴露）
 
 ## 版本信息
 
