@@ -1,0 +1,7 @@
+# Extra config to override default milvus.yaml
+# Add your custom Milvus configuration here
+# Example:
+# proxy:
+#   port: 19530
+# log:
+#   level: info

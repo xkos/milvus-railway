@@ -1,0 +1,24 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "milvus run standalone"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+healthcheckPath = "/healthz"
+healthcheckTimeout = 300
+
+# Volume configuration for data persistence
+[[deploy.volumes]]
+mountPath = "/var/lib/milvus"
+name = "milvus-data"
+
+# Expose service variables for other Railway services
+[deploy.serviceVariables]
+MILVUS_HOST = "${{RAILWAY_PRIVATE_DOMAIN}}"
+MILVUS_PORT = "19530"
+MILVUS_GRPC_PORT = "19530"
+MILVUS_METRICS_PORT = "9091"
+MILVUS_ETCD_PORT = "2379"
+MILVUS_URI = "http://${{RAILWAY_PRIVATE_DOMAIN}}:19530"

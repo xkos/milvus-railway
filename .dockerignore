@@ -1,0 +1,68 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.git*
+
+# Documentation
+README.md
+*.md
+
+# Docker files
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Railway config
+railway.toml
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Testing
+test.sh
+*.test
+*.spec.js
+*.spec.ts
+
+# Temporary files
+*.tmp
+.cache/
+tmp/
+
+# Local volumes
+volumes/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS
+Thumbs.db
+.DS_Store
