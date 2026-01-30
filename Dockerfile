@@ -9,6 +9,10 @@ RUN mkdir -p /var/lib/milvus/etcd /var/lib/milvus/data
 # Copy configuration files
 COPY embedEtcd.yaml /milvus/configs/embedEtcd.yaml
 COPY user.yaml /milvus/configs/user.yaml
+COPY entrypoint.sh /milvus/entrypoint.sh
+
+# Make entrypoint executable
+RUN chmod +x /milvus/entrypoint.sh
 
 # Set environment variables
 ENV ETCD_USE_EMBED=true \
@@ -27,5 +31,5 @@ EXPOSE 19530 9091 2379
 HEALTHCHECK --interval=30s --timeout=20s --start-period=90s --retries=3 \
     CMD curl -f http://localhost:9091/healthz || exit 1
 
-# Start Milvus in standalone mode
-CMD ["milvus", "run", "standalone"]
+# Use custom entrypoint for password management
+ENTRYPOINT ["/milvus/entrypoint.sh"]
