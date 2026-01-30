@@ -9,6 +9,7 @@ RUN mkdir -p /var/lib/milvus/etcd /var/lib/milvus/data
 # Copy configuration files
 COPY embedEtcd.yaml /milvus/configs/embedEtcd.yaml
 COPY user.yaml /milvus/configs/user.yaml
+COPY user.yaml /milvus/user.yaml
 COPY entrypoint.sh /milvus/entrypoint.sh
 
 # Make entrypoint executable
