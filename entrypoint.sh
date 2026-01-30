@@ -3,8 +3,8 @@ set -e
 
 echo "Starting Milvus standalone..."
 
-# Generate user.yaml with password configuration
-echo "Generating Milvus configuration..."
+# Modify milvus.yaml with password configuration
+echo "Modifying Milvus configuration..."
 
 # Get password from environment variable or use default
 MILVUS_PASSWORD="${MILVUS_ROOT_PASSWORD:-Milvus}"
@@ -16,28 +16,21 @@ else
     echo "   Set MILVUS_ROOT_PASSWORD environment variable for production!"
 fi
 
-# Generate user.yaml dynamically
-cat > /milvus/user.yaml << EOF
-# Auto-generated Milvus configuration
-# Generated at: $(date)
+# Modify /milvus/configs/milvus.yaml using sed
+CONFIG_FILE="/milvus/configs/milvus.yaml"
 
-# Enable authentication
-common:
-  security:
-    authorizationEnabled: true
-    # Initial root password (auto-configured from MILVUS_ROOT_PASSWORD)
-    defaultRootPassword: "$MILVUS_PASSWORD"
-
-# Log configuration
-log:
-  level: info
-
-# Proxy configuration
-# proxy:
-#   port: 19530
-EOF
-
-echo "✓ Configuration generated successfully"
+if [ -f "$CONFIG_FILE" ]; then
+    # Enable authorization
+    sed -i 's/authorizationEnabled: false/authorizationEnabled: true/g' "$CONFIG_FILE"
+    
+    # Set root password (handle various possible formats)
+    sed -i "s/defaultRootPassword:.*/defaultRootPassword: $MILVUS_PASSWORD/g" "$CONFIG_FILE"
+    
+    echo "✓ Configuration modified successfully"
+else
+    echo "⚠️  Warning: $CONFIG_FILE not found"
+    exit 1
+fi
 
 # Start Milvus in standalone mode
 echo "Starting Milvus..."
