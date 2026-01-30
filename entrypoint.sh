@@ -17,7 +17,7 @@ else
 fi
 
 # Generate user.yaml dynamically
-cat > /milvus/configs/user.yaml << EOF
+cat > /milvus/user.yaml << EOF
 # Auto-generated Milvus configuration
 # Generated at: $(date)
 
