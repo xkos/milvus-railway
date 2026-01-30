@@ -26,7 +26,7 @@ common:
   security:
     authorizationEnabled: true
     # Initial root password (auto-configured from MILVUS_ROOT_PASSWORD)
-    initialRootPassword: "$MILVUS_PASSWORD"
+    defaultRootPassword: "$MILVUS_PASSWORD"
 
 # Log configuration
 log:
