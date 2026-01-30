@@ -1,4 +1,4 @@
-FROM milvusdb/milvus:v2.4.17
+FROM milvusdb/milvus:v2.6.9
 
 # Set working directory
 WORKDIR /milvus
