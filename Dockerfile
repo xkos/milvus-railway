@@ -18,6 +18,7 @@ RUN chmod +x /milvus/entrypoint.sh
 ENV ETCD_USE_EMBED=true \
     ETCD_DATA_DIR=/var/lib/milvus/etcd \
     ETCD_CONFIG_PATH=/milvus/configs/embedEtcd.yaml \
+    ETCD_LOG_LEVEL=error \
     COMMON_STORAGETYPE=local \
     DEPLOY_MODE=STANDALONE
 

@@ -16,4 +16,7 @@
 #     authorizationEnabled: true
 #     defaultRootPassword: "YourPassword"
 log:
-  level: warn
+  level: error
+etcd:
+  log:
+   level: error
