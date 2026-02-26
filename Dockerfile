@@ -1,7 +1,4 @@
-FROM milvusdb/milvus:v2.6.9
-
-# Set working directory
-WORKDIR /milvus
+FROM milvusdb/milvus:v2.6.11
 
 # Create necessary directories
 RUN mkdir -p /var/lib/milvus/etcd /var/lib/milvus/data

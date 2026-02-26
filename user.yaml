@@ -14,9 +14,6 @@
 # common:
 #   security:
 #     authorizationEnabled: true
-#     defaultRootPassword: "YourPassword"
+#     defaultRootPassword: "YourPasswordWillReplaceByEnv"
 log:
   level: error
-etcd:
-  log:
-   level: error
