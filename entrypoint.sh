@@ -32,6 +32,17 @@ else
     exit 1
 fi
 
+USER_CONFIG_FILE="/milvus/configs/user.yaml"
+if [ -f "$USER_CONFIG_FILE" ]; then
+    # Enable authorization
+    sed -i 's/authorizationEnabled: false/authorizationEnabled: true/g' "$USER_CONFIG_FILE"
+    
+    # Set root password (handle various possible formats)
+    sed -i "s/defaultRootPassword:.*/defaultRootPassword: $MILVUS_PASSWORD/g" "$USER_CONFIG_FILE"
+    
+    echo "✓ Configuration user successfully"
+fi
+
 # Start Milvus in standalone mode
 echo "Starting Milvus..."
 exec /milvus/bin/milvus run standalone

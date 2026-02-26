@@ -15,5 +15,5 @@
 #   security:
 #     authorizationEnabled: true
 #     defaultRootPassword: "YourPassword"
-# log:
-#   level: info
+log:
+  level: warn
