@@ -10,3 +10,8 @@ auto-compaction-retention: '1000'
 heartbeat-interval: 500
 election-timeout: 5000
 initial-election-tick-advance: false
+
+# Temporary Railway incident recovery: keep existing data, but force the
+# single embedded etcd member to form a fresh cluster identity on startup.
+# Remove this after Milvus starts successfully once.
+force-new-cluster: true
