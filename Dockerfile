@@ -19,11 +19,7 @@ COPY entrypoint.sh /milvus/entrypoint.sh
 RUN chmod +x /milvus/entrypoint.sh
 
 # Set environment variables
-ENV ETCD_USE_EMBED=false \
-    ETCD_DATA_DIR=/var/lib/milvus/etcd \
-    ETCD_ENDPOINTS=127.0.0.1:2379 \
-    ETCD_CONFIG_PATH=/milvus/configs/embedEtcd.yaml \
-    ETCD_LOG_LEVEL=error \
+ENV ETCD_ENDPOINTS=127.0.0.1:2379 \
     COMMON_STORAGETYPE=local \
     DEPLOY_MODE=STANDALONE
 

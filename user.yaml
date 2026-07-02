@@ -17,3 +17,13 @@
 #     defaultRootPassword: "YourPasswordWillReplaceByEnv"
 log:
   level: error
+
+common:
+  security:
+    authorizationEnabled: true
+    defaultRootPassword: Milvus
+
+etcd:
+  endpoints: 127.0.0.1:2379
+  use:
+    embed: false
