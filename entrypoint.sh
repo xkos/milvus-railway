@@ -2,16 +2,48 @@
 set -e
 
 MILVUS_CHILD_PID=""
+ETCD_CHILD_PID=""
 
-stop_milvus() {
+stop_children() {
     if [ -n "$MILVUS_CHILD_PID" ] && kill -0 "$MILVUS_CHILD_PID" 2>/dev/null; then
         echo "Stopping Milvus child process ${MILVUS_CHILD_PID}..."
         kill -TERM "$MILVUS_CHILD_PID" 2>/dev/null || true
         wait "$MILVUS_CHILD_PID" 2>/dev/null || true
     fi
+
+    if [ -n "$ETCD_CHILD_PID" ] && kill -0 "$ETCD_CHILD_PID" 2>/dev/null; then
+        echo "Stopping etcd child process ${ETCD_CHILD_PID}..."
+        kill -TERM "$ETCD_CHILD_PID" 2>/dev/null || true
+        wait "$ETCD_CHILD_PID" 2>/dev/null || true
+    fi
 }
 
-trap stop_milvus TERM INT
+trap stop_children TERM INT
+
+wait_for_etcd() {
+    max_attempts="${ETCD_STARTUP_ATTEMPTS:-120}"
+    attempt=0
+
+    until curl -fsS http://127.0.0.1:2379/health >/dev/null 2>&1; do
+        attempt=$((attempt + 1))
+
+        if ! kill -0 "$ETCD_CHILD_PID" 2>/dev/null; then
+            echo "etcd exited before becoming healthy."
+            wait "$ETCD_CHILD_PID" || true
+            return 1
+        fi
+
+        if [ "$attempt" -ge "$max_attempts" ]; then
+            echo "Timed out waiting for etcd health after ${max_attempts}s."
+            return 1
+        fi
+
+        echo "Waiting for etcd to become healthy (${attempt}/${max_attempts})..."
+        sleep 1
+    done
+
+    echo "etcd is healthy."
+}
 
 echo "Starting Milvus standalone..."
 
@@ -55,8 +87,14 @@ if [ -f "$USER_CONFIG_FILE" ]; then
     echo "Configuration user successfully"
 fi
 
-# Keep restart control inside the container. This avoids Railway rapidly
-# recreating the container while embedded etcd is still recovering/electing.
+echo "Starting standalone etcd..."
+etcd --config-file /milvus/configs/embedEtcd.yaml &
+ETCD_CHILD_PID=$!
+wait_for_etcd
+
+# Keep restart control inside the container. Milvus connects to the already
+# healthy etcd process above, so coordinator session initialization no longer
+# races embedded etcd leader election.
 attempt=0
 while true; do
     attempt=$((attempt + 1))

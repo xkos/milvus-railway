@@ -1,7 +1,14 @@
+FROM quay.io/coreos/etcd:v3.5.23 AS etcd
+
 FROM milvusdb/milvus:v2.6.11
 
 # Create necessary directories
 RUN mkdir -p /var/lib/milvus/etcd /var/lib/milvus/data
+
+# Run etcd as a separate process in the same container so Milvus can wait for
+# it to become healthy before starting coordinators.
+COPY --from=etcd /usr/local/bin/etcd /usr/local/bin/etcd
+COPY --from=etcd /usr/local/bin/etcdctl /usr/local/bin/etcdctl
 
 # Copy configuration files
 COPY embedEtcd.yaml /milvus/configs/embedEtcd.yaml
@@ -12,8 +19,9 @@ COPY entrypoint.sh /milvus/entrypoint.sh
 RUN chmod +x /milvus/entrypoint.sh
 
 # Set environment variables
-ENV ETCD_USE_EMBED=true \
+ENV ETCD_USE_EMBED=false \
     ETCD_DATA_DIR=/var/lib/milvus/etcd \
+    ETCD_ENDPOINTS=127.0.0.1:2379 \
     ETCD_CONFIG_PATH=/milvus/configs/embedEtcd.yaml \
     ETCD_LOG_LEVEL=error \
     COMMON_STORAGETYPE=local \
