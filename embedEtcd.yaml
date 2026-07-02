@@ -3,3 +3,10 @@ advertise-client-urls: http://0.0.0.0:2379
 quota-backend-bytes: 4294967296
 auto-compaction-mode: revision
 auto-compaction-retention: '1000'
+
+# Railway volumes can be temporarily slow after platform incidents. Use more
+# conservative raft timing so embedded etcd does not report leader changes while
+# Milvus components are initializing sessions.
+heartbeat-interval: 500
+election-timeout: 5000
+initial-election-tick-advance: false
