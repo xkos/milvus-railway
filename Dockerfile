@@ -27,7 +27,7 @@ ENV ETCD_USE_EMBED=true \
 EXPOSE 19530 9091 2379
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=20s --start-period=90s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=20s --start-period=300s --retries=10 \
     CMD curl -f http://localhost:9091/healthz || exit 1
 
 # Use custom entrypoint for password management
